@@ -24,7 +24,7 @@ affiliation:
     address: Deltares, Delft, the Netherlands
 main_findings:
   - "Application of the **genRE** approach to spatial interpolation of precipitation gauge data for the Suir River Basin."
-  - "**The use of a re-analysis data set enchances real-time rain interpolation...**"
+  - "**The use of a re-analysis data set enhances real-time rain interpolation...**"
 logoright_name: '![](https://user-images.githubusercontent.com/62819177/113247604-fcd1a900-9280-11eb-93dc-b81c453fa8e1.png){.main-img-right}'
 main_width: 0.4
 output: 
