@@ -1,0 +1,131 @@
+---
+title:
+primary_colour: "#3366CC"
+secondary_colour: "#3366CC"
+author:
+  - name: Georgios Boumis
+    affil: 1
+    email: s181784@student.dtu.dk
+    orcid: 0000-0001-7825-5239
+    main: true
+  - name: Bart van Osnabrugge
+    affil: 2
+    email: Bart.vanOsnabrugge@deltares.nl
+    orcid: 0000-0002-3156-9107
+    main: false
+  - name: Jan Verkade
+    affil: 2
+    email: Jan.Verkade@deltares.nl
+    main: false
+affiliation:
+  - num: 1
+    address: Technical University of Denmark, Lyngby, Denmark
+  - num: 2
+    address: Deltares, Delft, the Netherlands
+main_findings:
+  - "Application of the **genRE** approach to spatial interpolation of precipitation gauge data for the Suir River Basin."
+  - "**The use of a re-analysis data set enchances real-time rain interpolation...**"
+logoright_name: '![](https://user-images.githubusercontent.com/62819177/113247604-fcd1a900-9280-11eb-93dc-b81c453fa8e1.png){.main-img-right}'
+main_width: 0.4
+output: 
+  posterdown::posterdown_betterland:
+    fig_caption: yes
+    self_contained: false
+    pandoc_args: --mathjax
+    highlight: espresso
+    number_sections: false
+link-citations: true
+bibliography: references.bib
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(results = 'asis',
+                      echo = FALSE,
+                      warning = FALSE,
+                      tidy = FALSE,
+                      message = FALSE,
+                      fig.align = 'center',
+                      out.width = "100%")
+options(knitr.table.format = "html") 
+```
+
+# Introduction
+
+High density observation networks still remain scarce, and thus interpolation is not able to adequately capture the spatial distribution of precipitation. On the contrary, re-analysis precipitation data sets with high spatio-temporal resolution become more prevalent. It thus seems tempting to incorporate re-analysis information to the real-time flood forecasting process and specifically interpolation itself.\newline
+In this study, we blended **$^*$genRE** - **an interpolation approach that takes into account local climatology** - with re-analysis precipitation data from the Irish National Meteorological Service (**MÉRA**). We examined the capability of this technique to produce accurate precipitation fields in the context of the operational **Suir Advanced Flood Forecasting System** (Suir AFFS), a forecasting tool based on **Delft-FEWS**.
+
+$^*$@van2017genre
+
+```{r, echo=FALSE}
+# Define variable containing url
+url <- "https://user-images.githubusercontent.com/62819177/113468675-3f27f100-940d-11eb-9840-681333502ef3.png"
+```
+
+<center><figure><img src="`r url`" height="600px" width="700px"><figcaption> $^{**}$Figure 1: Suir River Basin, Ireland. 
+    </figcaption></figure></center>
+
+# Objectives
+
+Aims of this study included but were not limited to:
+
+1. Comparing MÉRA-enhanced genRE with well-celebrated deterministic and geostatistical techniques,
+2. Providing insight about the extent to which genRE can mimic its reference climatology.
+
+# Methods
+
+With the use of hourly precipitation observations from 29 gauges of the **Office of Public Works**, we produced rainfall grids over the Suir River Basin$^{**}$ for two severe storms that struck **Ireland** from 13 December 2013 to 17 February 2014, and 4 December 2015 to 13 January 2016 respectively. The grids were constructed by making use of the following interpolators:
+
+1. genRE with MÉRA as background climatology,
+2. Inverse Distance Weighting (IDW),
+3. Ordinary Kriging (OK),
+4. Regression Kriging (RK).
+
+Afterwards, we assessed the skill of the different interpolation methods by using cross-validation with a leave-one-out approach, while we also examined the climatological consistency of each interpolator with MÉRA - an aspect sought by flood forecasters since the distributed hydrologic model used within the Suir AFFS has been calibrated against MÉRA.
+
+# Results
+
+As shown in Table 1, cross-validation results confirm that genRE performed slightly better in the majority of metrics used, for both rainfall events considered.
+
+```{r table-1, echo=FALSE, message=FALSE, warnings=FALSE}
+require(pander)
+panderOptions('table.split.table', Inf)
+set.caption("Table 1: Averaged cross-validation results.")
+my.data <- "
+  Event        | Method | RMSE | BIAS  | Rvar 
+  2013/14      | IDW    | 0.30 | -0.17 | 0.39
+  2015/16      | IDW    | 0.46 | -0.03 | 0.41
+  2013/14      | genRE  |0.29  | -0.11 |0.41
+  2015/16      | genRE  |0.45  | -0.05 |0.41
+  2013/14      | OK     |0.31  |  0.29 |0.32
+  2015/16      | OK     |0.43  |  0.20 |0.21
+  2013/14      | RK     |0.30  |  0.64 |0.39
+  2015/16      | RK     |0.46  |  0.63 |0.37"
+
+df <- read.delim(textConnection(my.data),header=FALSE,sep="|",strip.white=TRUE,stringsAsFactors=FALSE)
+names(df) <- unname(as.list(df[1,])) # put headers on
+df <- df[-1,] # remove first row
+row.names(df)<-NULL
+pander(df, style = 'rmarkdown')
+```
+
+Table 2 shows that genRE outperformed the other interpolators when imitating the climatology of MÉRA.
+
+```{r table-2, echo=FALSE, message=FALSE, warnings=FALSE}
+require(pander)
+panderOptions('table.split.table', Inf)
+set.caption("Table 2: Spearman's correlation between MÉRA grids and interpolation grids.")
+my.data <- "
+  Event        | IDW  | genRE | OK | RK 
+  2013/14      | 0.42 | 0.72 |  0.53| 0.41
+  2015/16      | 0.58 | 0.75 |  0.69| 0.58"
+
+df <- read.delim(textConnection(my.data),header=FALSE,sep="|",strip.white=TRUE,stringsAsFactors=FALSE)
+names(df) <- unname(as.list(df[1,])) # put headers on
+df <- df[-1,] # remove first row
+row.names(df)<-NULL
+pander(df, style = 'rmarkdown')
+```
+
+Our results suggest that genRE might provide a better alternative approach for spatial interpolation than the technique currently employed inside the Suir AFFS i.e. IDW. There is strong evidence that precipitation forcing originating with genRE will subsequently provide more truthful streamflow forecasts.
+
+*If you are interested in reading the full story and having a look at more comprehensive methods & results, scan the QR code!*
